@@ -81,4 +81,21 @@ export class PoliticalDonorChart extends BasicChart {
         let filtered = this.data.filter(d => d.EntityName === name);
         let perDonor = helpers.binPerName(filtered,d => d.DonorName);
     }
+
+    tree(filterString = ' MP') {
+        let filtered = this.data.filter(
+            d => d.EntityName.match(filterString));
+        helpers.fixateColors(filtered);
+
+        let tree = makeTree(filtered,
+        (d, name) => d.DonorName === name,
+        d => d.EntityName,
+        d => d.EntityName || ''
+        );
+
+        tree.children = tree.children.filter(d => d.children.length > 1);
+
+        let diagonal = d3.svg.diagonal.radial()
+                        .projection(d => [d.y,d.x/180 * Math.PI]);
+    }
 }
